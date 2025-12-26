@@ -35,18 +35,13 @@ pip install -r requirements.txt
 
 ### 3. 📓 Run the Notebook
 
-The entire pipeline—from data download to training and inference—is contained within the Jupyter Notebook:
-
-```bash
-jupyter notebook flower_fusion_case_study.ipynb
-```
-
+Use visual studio code and install the jupyter extension to open the `src/main.ipynb` notebook. 
 Once opened, select "Run All" to execute the data-driven analysis and view the visualizations. 💡
 
 ## 📂 Project Structure
 
-* `flower_fusion_case_study.ipynb`: 📝 The main notebook containing the model logic and visualizations
-* `case_study_report.md`: 📖 Formal LNCS-formatted report
+* `src/main.ipynb`: 📝 The main notebook containing the model logic and visualizations
+* `docs/main.pdf`: 📖 Formal LNCS-formatted report
 * `data/`: 📁 (Generated automatically) Stores the Oxford-IIIT Pet Dataset
 
 ## 🎓 Academic Credit
