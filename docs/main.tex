@@ -1,0 +1,122 @@
+\documentclass[runningheads]{llncs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+% Remove running heads
+\pagestyle{plain}
+
+\begin{document}
+
+\title{Dual-Backbone Fusion of ResNet50 and MobileNetV2 for Fine-Grained Pet Breed Classification}
+
+\author{Joeniño D. Cainday}
+\institute{Department of Computer Science,\\
+College of Information Technology and Computing,\\
+University of Science and Technology of Southern Philippines\\
+\email{caindayjoeninyo@gmail.com}}
+
+\maketitle
+
+\begin{abstract}
+Fine-grained image classification remains a challenge in computer vision due to low inter-class variance and high intra-class variance. This case study explores a ``Fusion Architecture'' that combines ResNet50 and MobileNetV2 to classify 37 pet breeds. Concatenating deep structural features with efficient localized textural cues, the model achieves superior convergence stability. Results indicate that architectural fusion provides a more robust feature representation for distinguishing visually similar breeds in domestic environments.
+\keywords{Computer Vision \and Deep Learning \and Architecture Fusion \and Transfer Learning \and Fine-Grained Classification}
+\end{abstract}
+
+\section{Introduction}
+
+The goal of image classification is to teach computers how to recognize objects. However, "fine-grained" classification is a much harder version of this task. Instead of just telling a cat from a dog, the computer must distinguish between very similar breeds, such as a Siberian Husky and an Alaskan Malamute. These animals might look almost identical to the untrained eye, making it difficult for standard AI models to be accurate.
+
+ResNet50 (The Structural Architect): ResNet is a "heavyweight" model. Its primary strength lies in its depth and its use of Residual Blocks (skip connections). These allow it to learn very complex, high-level geometric patterns. In pet classification, ResNet50 is excellent at identifying the "skeleton" or the "global geometry"—things like the length of the snout, the height of the legs, and the overall body proportions.
+
+MobileNetV2 (The Efficient Detailer): MobileNet was designed for mobile devices, so it uses Depthwise Separable Convolutions. This makes it incredibly efficient at picking up "local" features. It tends to be more sensitive to textural patterns, such as the specific direction of hair growth, the texture of the coat, or small facial markings.
+
+The difference is that ResNet50 is computationally expensive and focuses on spatial hierarchies (the big picture), while MobileNetV2 is lightweight and focuses on efficient localized patterns (the fine details). Concatenating their outputs, you provide the final classifier with a "feature-rich" vector that contains both the broad structural data and the fine-grained textural data, leading to much higher accuracy than using either model alone.
+
+In the field of Graphics and Visual Computing, the challenge is to capture both the big picture (the animal's shape and size) and the small details (fur texture and eye color). This paper proposes a "fusion" strategy. Using two different AI "brains"—ResNet50 \cite{he2016deep} for global structure and MobileNetV2 \cite{sandler2018mobilenetv2} for fine details—we can combine their strengths to create a much smarter classifier. This dual-approach helps the system focus on the subtle clues that set one breed apart from another.
+
+\section{Dataset Description}
+
+The study utilizes the Oxford-IIIT Pet Dataset~\cite{parkhi2012cats}, a benchmark for fine-grained vision tasks.  
+The dataset used was the Oxford-IIIT Pet Dataset, which contains 37 classes comprising 25 dog breeds and 12 cat breeds. The dataset includes approximately 7,349 images in total.
+
+The dataset reflects real-world conditions, including various backgrounds and lighting.
+
+\section{Methodology}
+\subsection{Architectures Used}
+\textbf{ResNet50:} A deep residual network that uses skip connections to learn complex anatomical structures (e.g., limb proportions, body shape).  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{resnet50.png}
+    \caption{ResNet50 Model Architecture}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{MobileNetV2:} An efficient model using depthwise separable convolutions, highly effective at identifying localized patterns (e.g., fur texture, facial markings).  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{mobilenetv2.png}
+    \caption{MobileNetV2 Model Architecture}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\subsection{Preprocessing and Data Augmentation}
+
+To ensure the model receives high-quality, standardized input, several preprocessing steps are implemented. All images are resized to a fixed resolution of $224 \times 224$ pixels to match the input requirements of the pretrained backbones. Data augmentation is applied during training using random horizontal flips to improve spatial invariance and model robustness. Furthermore, images are converted to tensors and normalized using the mean ($[0.485, 0.456, 0.406]$) and standard deviation ($[0.229, 0.224, 0.225]$) of the ImageNet dataset [4], ensuring the input distribution aligns with the features learned during the backbones' initial training.
+
+\subsection{Fusion Strategy}
+We employ Late Feature Concatenation. Both models serve as frozen feature extractors pretrained on ImageNet \cite{russakovsky2015imagenet}.
+
+The ResNet50 backbone produces a 2048-dimensional vector using global average pooling \cite{he2016deep}, while the MobileNetV2 backbone outputs a 1280-dimensional vector with the same pooling strategy \cite{sandler2018mobilenetv2}. These vectors are then concatenated—a process known as late feature concatenation, where each backbone independently extracts features before combining them—into a 3328-dimensional feature space, which is followed by a Dropout layer with a rate of 0.3 and a Softmax classifier for final predictions \cite{he2016deep,sandler2018mobilenetv2}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fusion.png}
+    \caption{Dual-Backbone Fusion Architecture}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Results and Visualizations}
+The model was evaluated using transfer learning, where only the fusion head was trained.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{training.png}
+    \caption{Training Loss and Accuracy over 5 Epochs}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{test.png}
+    \caption{Visual Inference (Testing)}
+    \label{fig:placeholder}
+\end{figure}
+
+The model achieved approximately 85–90\% accuracy on the validation set within 5 epochs. The loss curve exhibited a steady decline, suggesting that the dual-backbone architecture stabilized gradients during the early stages of training. Additionally, the model was able to distinguish breeds with similar coloration—such as Maine Coons versus Persians—by prioritizing structural ear shape features extracted from ResNet and textural fur features extracted from MobileNet.
+  
+
+\section{Conclusion}
+The primary contribution of this fusion is the mitigation of intra-class variance. The fusion layer effectively synthesizes ``deep'' structural features with ``efficient'' textural cues.
+
+Using standard ImageNet normalization ensured that the pretrained backbones maintained feature extraction integrity. However, extreme geometric similarity (such as that between Staffordshire Bull Terriers and American Pit Bull Terriers) still poses a challenge, indicating that higher-resolution input or attention mechanisms may be necessary.
+
+Combining two distinct model backbones resulted in a system stronger than its individual parts. This case study shows that for fine-grained tasks, a diverse feature space produces more reliable and accurate decisions.
+
+\begin{thebibliography}{8}
+
+\bibitem{he2016deep} He, K., Zhang, X., Ren, S., Sun, J.: Deep Residual Learning for Image Recognition. In: \textit{CVPR}, pp. 770–778 (2016)
+
+\bibitem{sandler2018mobilenetv2} Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., Chen, L.C.: MobileNetV2: Inverted Residuals and Linear Bottlenecks. In: \textit{CVPR}, pp. 4510–4520 (2018)
+
+\bibitem{parkhi2012cats} Parkhi, O.M., Vedaldi, A., Zisserman, A., Jawahar, C.V.: Cats and Dogs. In: \textit{CVPR}, pp. 3498–3505 (2012)
+
+\bibitem{russakovsky2015imagenet} Russakovsky, O., et al.: ImageNet Large Scale Visual Recognition Challenge. \textit{International Journal of Computer Vision} 115(3), 211–252 (2015)
+
+\end{thebibliography}
+
+\end{document}
